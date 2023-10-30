@@ -1,0 +1,26 @@
+{
+  "name": "changelog-from-files",
+  "version": "0.0.1",
+  "description": "update changelog using separate files with changes",
+  "main": "index.js",
+  "bin": {
+    "changelog-from-files": "./src/index.js"
+  },
+  "scripts": {
+    "start": "node ./src/index.js",
+    "example": "node ./src/index.js example/unreleased example/CHANGELOG.md"
+  },
+  "engines": {
+    "node": ">= 12",
+    "npm": ">= 6.9"
+  },
+  "author": "Max Zinovik",
+  "license": "Apache-2.0",
+  "bugs": {
+    "url": "https://github.com/zinovik/changelog-from-files/issues"
+  },
+  "homepage": "https://github.com/zinovik/changelog-from-files#readme",
+  "files": [
+    "src/**/*"
+  ]
+}
