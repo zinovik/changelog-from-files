@@ -6,23 +6,20 @@ const CHANGELOG_FILE_PATH = process.argv[3] || "CHANGELOG.md";
 const UNRELEASED_SECTION = process.argv[4] || "## [Unreleased]";
 const FILES_TO_IGNORE = (process.argv[5] || ".gitkeep,.gitignore").split(",");
 
-// Read and remove separate files with changes
+// Read separate files with changes
 const changes = fs
   .readdirSync(UNRELEASED_FOLDER_PATH)
   .map((category) => ({
     name: category,
     changes: fs
       .readdirSync(`${UNRELEASED_FOLDER_PATH}/${category}`)
-      .map((file) => {
-        const filePath = `${UNRELEASED_FOLDER_PATH}/${category}/${file}`;
-        const description = fs.readFileSync(filePath).toString();
-
-        if (FILES_TO_IGNORE.includes(file)) return "";
-
-        // fs.unlinkSync(filePath);
-
-        return description;
-      })
+      .map((file) =>
+        FILES_TO_IGNORE.includes(file)
+          ? ""
+          : fs
+              .readFileSync(`${UNRELEASED_FOLDER_PATH}/${category}/${file}`)
+              .toString()
+      )
       .filter((description) => description !== ""),
   }))
   .filter(({ changes }) => changes.length > 0);
@@ -46,4 +43,13 @@ fs.writeFileSync(
     UNRELEASED_SECTION,
     `${UNRELEASED_SECTION}\n${changelog}`
   )
+);
+
+// Remove separate files with changes
+fs.readdirSync(UNRELEASED_FOLDER_PATH).forEach((category) =>
+  fs
+    .readdirSync(`${UNRELEASED_FOLDER_PATH}/${category}`)
+    .forEach((file) =>
+      fs.unlinkSync(`${UNRELEASED_FOLDER_PATH}/${category}/${file}`)
+    )
 );
