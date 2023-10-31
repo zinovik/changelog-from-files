@@ -47,9 +47,9 @@ fs.writeFileSync(
 
 // Remove separate files with changes
 fs.readdirSync(UNRELEASED_FOLDER_PATH).forEach((category) =>
-  fs
-    .readdirSync(`${UNRELEASED_FOLDER_PATH}/${category}`)
-    .forEach((file) =>
-      fs.unlinkSync(`${UNRELEASED_FOLDER_PATH}/${category}/${file}`)
-    )
+  fs.readdirSync(`${UNRELEASED_FOLDER_PATH}/${category}`).forEach((file) => {
+    if (!FILES_TO_IGNORE.includes(file)) {
+      fs.unlinkSync(`${UNRELEASED_FOLDER_PATH}/${category}/${file}`);
+    }
+  })
 );
