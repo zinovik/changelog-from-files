@@ -1,55 +1,90 @@
 #!/usr/bin/env node
 const fs = require("fs");
 
-const UNRELEASED_FOLDER_PATH = process.argv[2] || "unreleased";
-const CHANGELOG_FILE_PATH = process.argv[3] || "CHANGELOG.md";
-const UNRELEASED_SECTION = process.argv[4] || "## [Unreleased]";
-const FILES_TO_IGNORE = (process.argv[5] || ".gitkeep,.gitignore").split(",");
+const getCommandLineParameter = (processArgv, name) => {
+  const nameIndex = processArgv.indexOf(name);
 
-// Read separate files with changes
-const changes = fs
-  .readdirSync(UNRELEASED_FOLDER_PATH)
-  .map((category) => ({
-    name: category,
+  return nameIndex > -1 ? processArgv[nameIndex + 1] : null;
+};
+
+const UNRELEASED_FOLDER_PATH =
+  getCommandLineParameter(process.argv, "--unreleased-path") || "unreleased";
+const CHANGELOG_FILE_PATH =
+  getCommandLineParameter(process.argv, "--changelog-path") || "CHANGELOG.md";
+const UNRELEASED_SECTION =
+  getCommandLineParameter(process.argv, "--unreleased-section") ||
+  "## [Unreleased]";
+const FILE_NAMES_TO_IGNORE = (
+  getCommandLineParameter(process.argv, "--ignored-files") ||
+  ".gitkeep,.gitignore"
+).split(",");
+
+const readChangesFromSeparateFiles = (folderPath, fileNamesToIgnore) =>
+  fs.readdirSync(folderPath).map((categoryName) => ({
+    name: categoryName,
     changes: fs
-      .readdirSync(`${UNRELEASED_FOLDER_PATH}/${category}`)
-      .map((file) =>
-        FILES_TO_IGNORE.includes(file)
-          ? ""
-          : fs
-              .readFileSync(`${UNRELEASED_FOLDER_PATH}/${category}/${file}`)
-              .toString()
-      )
-      .filter((description) => description !== ""),
-  }))
-  .filter(({ changes }) => changes.length > 0);
+      .readdirSync(`${folderPath}/${categoryName}`)
+      .filter((fileName) => !fileNamesToIgnore.includes(fileName))
+      .map((fileName) =>
+        fs.readFileSync(`${folderPath}/${categoryName}/${fileName}`).toString()
+      ),
+  }));
 
-if (changes.length === 0) {
+const formatChangesToSingleString = (changes) =>
+  changes
+    .map((category) => ({
+      name: category.name,
+      changesString: category.changes
+        .join("\n")
+        .split("\n")
+        .filter((changesLine) => changesLine !== "")
+        .join("\n"),
+    }))
+    .filter((category) => category.changesString !== "")
+    .map((category) => `### ${category.name}\n${category.changesString}`)
+    .join("\n");
+
+const updateChangelogFileWithNewChanges = (
+  changelogFilePath,
+  unreleasedSection,
+  changes
+) => {
+  const changelogFile = fs.readFileSync(changelogFilePath).toString();
+
+  fs.writeFileSync(
+    changelogFilePath,
+    changelogFile.replace(unreleasedSection, `${unreleasedSection}\n${changes}`)
+  );
+};
+
+const removeSeparateFilesWithChanges = (folderPath, fileNamesToIgnore) =>
+  fs.readdirSync(folderPath).forEach((categoryName) =>
+    fs
+      .readdirSync(`${folderPath}/${categoryName}`)
+      .filter((fileName) => !fileNamesToIgnore.includes(fileName))
+      .forEach((fileName) =>
+        fs.unlinkSync(`${folderPath}/${categoryName}/${fileName}`)
+      )
+  );
+
+///
+
+const allChanges = readChangesFromSeparateFiles(
+  UNRELEASED_FOLDER_PATH,
+  FILE_NAMES_TO_IGNORE
+);
+
+if (allChanges.length === 0) {
   console.info("There are no new changes");
   return;
 }
 
-// Format the changes to the single string with categories
-const changelog = changes
-  .map(({ name, changes }) => `### ${name}\n${changes.join("\n")}`)
-  .join(`\n`);
+const changelogChanges = formatChangesToSingleString(allChanges);
 
-// Update the changelog file with the new changes
-const changelogFile = fs.readFileSync(CHANGELOG_FILE_PATH).toString();
-
-fs.writeFileSync(
+updateChangelogFileWithNewChanges(
   CHANGELOG_FILE_PATH,
-  changelogFile.replace(
-    UNRELEASED_SECTION,
-    `${UNRELEASED_SECTION}\n${changelog}`
-  )
+  UNRELEASED_SECTION,
+  changelogChanges
 );
 
-// Remove separate files with changes
-fs.readdirSync(UNRELEASED_FOLDER_PATH).forEach((category) =>
-  fs.readdirSync(`${UNRELEASED_FOLDER_PATH}/${category}`).forEach((file) => {
-    if (!FILES_TO_IGNORE.includes(file)) {
-      fs.unlinkSync(`${UNRELEASED_FOLDER_PATH}/${category}/${file}`);
-    }
-  })
-);
+removeSeparateFilesWithChanges(UNRELEASED_FOLDER_PATH, FILE_NAMES_TO_IGNORE);

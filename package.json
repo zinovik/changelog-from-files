@@ -1,6 +1,6 @@
 {
   "name": "changelog-from-files",
-  "version": "0.0.3",
+  "version": "0.1.0",
   "description": "update changelog using separate files with changes",
   "main": "index.js",
   "bin": {
@@ -8,7 +8,7 @@
   },
   "scripts": {
     "start": "node ./src/index.js",
-    "example": "node ./src/index.js example/unreleased example/CHANGELOG.md"
+    "example": "node ./src/index.js --unreleased-path example/unreleased --changelog-path example/CHANGELOG.md"
   },
   "engines": {
     "node": ">= 12",

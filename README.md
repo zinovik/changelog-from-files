@@ -10,14 +10,20 @@ Check the `./example` directory and run `npm run example` to see how it works.
 
 ### how to use
 
-Run `npx changelog-from-files <UNRELEASED_FOLDER_PATH> <CHANGELOG_FILE_PATH> <UNRELEASED_SECTION> <FILES_TO_IGNORE>`
+Run
+```bash
+npx changelog-from-files \
+  --unreleased-path <UNRELEASED_FOLDER_PATH> \
+  --changelog-path <CHANGELOG_FILE_PATH> \
+  --unreleased-section <UNRELEASED_SECTION> \
+  --ignored-files <FILE_NAMES_TO_IGNORE>
+```
 
 Default values:
 
+```typescript
 UNRELEASED_FOLDER_PATH = "unreleased"
-
 CHANGELOG_FILE_PATH = "CHANGELOG.md"
-
 UNRELEASED_SECTION = "## [Unreleased]"
-
-FILES_TO_IGNORE = ".gitkeep,.gitignore"
+FILE_NAMES_TO_IGNORE = ".gitkeep,.gitignore"
+```
