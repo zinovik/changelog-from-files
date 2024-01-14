@@ -13,10 +13,10 @@ Check the `./example` directory and run `npm run example` to see how it works.
 Run
 ```bash
 npx changelog-from-files \
-  --unreleased-path <UNRELEASED_FOLDER_PATH> \
-  --changelog-path <CHANGELOG_FILE_PATH> \
-  --unreleased-section <UNRELEASED_SECTION> \
-  --ignored-files <FILE_NAMES_TO_IGNORE>
+  unreleased-path <UNRELEASED_FOLDER_PATH> \
+  changelog-path <CHANGELOG_FILE_PATH> \
+  unreleased-section <UNRELEASED_SECTION> \
+  ignored-files <FILE_NAMES_TO_IGNORE>
 ```
 
 Default values:
