@@ -8,14 +8,14 @@ const getCommandLineParameter = (processArgv, name) => {
 };
 
 const UNRELEASED_FOLDER_PATH =
-  getCommandLineParameter(process.argv, "unreleased-path") || "unreleased";
+  getCommandLineParameter(process.argv, "--unreleased-path") || "unreleased";
 const CHANGELOG_FILE_PATH =
-  getCommandLineParameter(process.argv, "changelog-path") || "CHANGELOG.md";
+  getCommandLineParameter(process.argv, "--changelog-path") || "CHANGELOG.md";
 const UNRELEASED_SECTION =
-  getCommandLineParameter(process.argv, "unreleased-section") ||
+  getCommandLineParameter(process.argv, "--unreleased-section") ||
   "## [Unreleased]";
 const FILE_NAMES_TO_IGNORE = (
-  getCommandLineParameter(process.argv, "ignored-files") ||
+  getCommandLineParameter(process.argv, "--ignored-files") ||
   ".gitkeep,.gitignore"
 ).split(",");
 
