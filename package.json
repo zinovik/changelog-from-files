@@ -1,6 +1,6 @@
 {
   "name": "changelog-from-files",
-  "version": "0.1.2",
+  "version": "0.1.3",
   "description": "update changelog using separate files with changes",
   "main": "index.js",
   "bin": {

@@ -41,7 +41,7 @@ const formatChangesToSingleString = (changes) =>
         .join("\n"),
     }))
     .filter((category) => category.changesString !== "")
-    .map((category) => `### ${category.name}\n${category.changesString}`)
+    .map((category) => `\n### ${category.name}\n\n${category.changesString}`)
     .join("\n");
 
 const updateChangelogFileWithNewChanges = (
